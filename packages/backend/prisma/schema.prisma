@@ -1,0 +1,131 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  name              String?
+  avatar            String?
+  auth0Id           String?  @unique
+  role              UserRole @default(CUSTOMER)
+  stripeCustomerId  String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  purchases         Purchase[]
+  assets            Asset[]
+  reviews           Review[]
+
+  @@map("users")
+}
+
+model Asset {
+  id          String      @id @default(cuid())
+  title       String
+  description String
+  price       Decimal     @db.Decimal(10, 2)
+  category    AssetCategory
+  status      AssetStatus @default(ACTIVE)
+  tags        String[]
+  
+  // File storage
+  sourceFileUrl    String   // Private S3 URL
+  sourceFileName   String
+  sourceFileSize   Int
+  previewImageUrl  String?  // Public S3 URL
+  previewVideoUrl  String?  // Public S3 URL
+  
+  // Metadata
+  downloadsCount   Int      @default(0)
+  rating           Decimal? @db.Decimal(3, 2)
+  ratingCount      Int      @default(0)
+  
+  // Relations
+  sellerId         String
+  seller           User     @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  purchases        Purchase[]
+  reviews          Review[]
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("assets")
+}
+
+model Purchase {
+  id              String           @id @default(cuid())
+  amount          Decimal          @db.Decimal(10, 2)
+  currency        String           @default("USD")
+  status          PurchaseStatus   @default(PENDING)
+  stripePaymentId String?          @unique
+  
+  // Download access
+  downloadUrl     String?          // Presigned URL
+  downloadExpires DateTime?
+  
+  // Relations
+  buyerId         String
+  buyer           User             @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  assetId         String
+  asset           Asset            @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@map("purchases")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int      // 1-5 stars
+  comment   String?
+  
+  // Relations
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assetId   String
+  asset     Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, assetId])
+  @@map("reviews")
+}
+
+// Enums
+enum UserRole {
+  CUSTOMER
+  SELLER
+  ADMIN
+}
+
+enum AssetCategory {
+  MODEL_3D
+  CODE_SNIPPET
+  NOTION_TEMPLATE
+  OTHER
+}
+
+enum AssetStatus {
+  ACTIVE
+  INACTIVE
+  PENDING_REVIEW
+}
+
+enum PurchaseStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
