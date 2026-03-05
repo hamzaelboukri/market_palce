@@ -2,16 +2,22 @@ FROM node:18-alpine
 
 WORKDIR /app
 
+# Copy Prisma schema first
+COPY prisma ./prisma/
+
 # Install dependencies
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
-# Copy source code
-COPY . .
+# Install ts-node globally for development
+RUN npm install -g ts-node
 
 # Generate Prisma client
 RUN npx prisma generate
 
+# Copy source code
+COPY . .
+
 EXPOSE 3001
 
-CMD ["npm", "run", "start:dev"]
+CMD ["npx", "ts-node", "src/main.ts"]

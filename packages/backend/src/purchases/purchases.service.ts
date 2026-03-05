@@ -138,7 +138,7 @@ export class PurchasesService {
     });
 
     return {
-      total: result._sum.amount || 0,
+      total: Number(result._sum.amount) || 0,
       currency: 'USD',
     };
   }
@@ -170,7 +170,7 @@ export class PurchasesService {
       }),
     ]);
 
-    const totalRevenue = revenueResult._sum.amount || 0;
+    const totalRevenue = Number(revenueResult._sum.amount) || 0;
     const averagePrice = totalPurchases > 0 ? totalRevenue / totalPurchases : 0;
 
     return {

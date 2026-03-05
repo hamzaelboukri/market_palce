@@ -5,10 +5,12 @@ import { useParams, useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { CheckCircle, AlertCircle, Download } from 'lucide-react'
+import { useAuthToken } from '@/lib/use-auth-token'
 
 export default function PurchasePage() {
   const params = useParams()
   const router = useRouter()
+  const { getAuthHeaders } = useAuthToken()
   const [loading, setLoading] = useState(true)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -33,10 +35,9 @@ export default function PurchasePage() {
 
   const handleDownload = async () => {
     try {
+      const authHeaders = await getAuthHeaders()
       const response = await fetch(`http://localhost:3001/s3/download/${params.id}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+        headers: authHeaders
       })
       const data = await response.json()
       

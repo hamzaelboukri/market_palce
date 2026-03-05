@@ -1,5 +1,5 @@
 {
-  "name": "prosets-marketplace",
+  "name": "market_palace",
   "version": "1.0.0",
   "description": "Marketplace for digital assets (3D models, code snippets, Notion templates)",
   "private": true,
@@ -27,5 +27,8 @@
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=9.0.0"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1693.0"
   }
 }

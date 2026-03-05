@@ -12,6 +12,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { PurchasesService } from './purchases.service';
 import { CreatePurchaseDto } from './dto/create-purchase.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { AuthenticatedUser } from '../auth/auth.interface';
 
 @ApiTags('purchases')
 @Controller('purchases')
@@ -22,8 +23,16 @@ export class PurchasesController {
   @Post()
   @ApiOperation({ summary: 'Create a new purchase' })
   @ApiResponse({ status: 201, description: 'Purchase created successfully' })
-  async create(@Body() createPurchaseDto: CreatePurchaseDto) {
-    return this.purchasesService.create(createPurchaseDto);
+  async create(@Body() createPurchaseDto: CreatePurchaseDto, @Request() req: { user: AuthenticatedUser }) {
+    return this.purchasesService.create({
+      ...createPurchaseDto,
+      buyer: {
+        connect: { id: req.user.id }
+      },
+      asset: {
+        connect: { id: createPurchaseDto.assetId }
+      },
+    });
   }
 
   @Get()

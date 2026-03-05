@@ -1,11 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Download, ExternalLink, Calendar } from 'lucide-react'
 import Link from 'next/link'
+import { useAuthToken } from '@/lib/use-auth-token'
 
 interface Purchase {
   id: string
@@ -24,21 +26,25 @@ interface Purchase {
 }
 
 export default function PurchasesPage() {
+  const router = useRouter()
+  const { getAuthHeaders, isAuthenticated, isLoading } = useAuthToken()
   const [purchases, setPurchases] = useState<Purchase[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchPurchases()
-  }, [])
+    if (!isLoading && !isAuthenticated) router.push('/login')
+  }, [isLoading, isAuthenticated, router])
+
+  useEffect(() => {
+    if (isAuthenticated) fetchPurchases()
+  }, [isAuthenticated])
 
   const fetchPurchases = async () => {
     try {
       setLoading(true)
-      const token = localStorage.getItem('token')
+      const authHeaders = await getAuthHeaders()
       const response = await fetch('http://localhost:3001/purchases/my-purchases', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        headers: authHeaders
       })
       const data = await response.json()
       setPurchases(data)
@@ -60,11 +66,9 @@ export default function PurchasesPage() {
 
     // Generate new download URL
     try {
-      const token = localStorage.getItem('token')
+      const authHeaders = await getAuthHeaders()
       const response = await fetch(`http://localhost:3001/s3/download/${purchase.asset.id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        headers: authHeaders
       })
       const data = await response.json()
       

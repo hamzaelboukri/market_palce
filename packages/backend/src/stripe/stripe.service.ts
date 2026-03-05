@@ -52,6 +52,11 @@ export class StripeService {
     return session;
   }
 
+  verifyWebhook(rawBody: Buffer | string, signature: string): Stripe.Event {
+    const webhookSecret = this.configService.get<string>('STRIPE_WEBHOOK_SECRET');
+    return this.stripe.webhooks.constructEvent(rawBody, signature, webhookSecret);
+  }
+
   async handleWebhook(event: Stripe.Event) {
     switch (event.type) {
       case 'checkout.session.completed':

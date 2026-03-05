@@ -1,44 +1,42 @@
-# Multi-stage build for production
+# ---------- base ----------
 FROM node:18-alpine AS base
-
-# Install dependencies only when needed
-FROM base AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4dc7ce547397f03606b6b6e7c4b4c1d3baf0d5b0c0#alpine
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Install dependencies based on the preferred package manager
-COPY package.json package-lock.json* ./
-RUN \
-  if [ -f package-lock.json ]; then npm ci --only=production; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+# ---------- deps ----------
+FROM base AS deps
 
-# Rebuild the source code only when needed
+COPY package.json package-lock.json ./
+
+COPY packages/frontend ./packages/frontend
+
+RUN npm ci --workspace=packages/frontend
+
 FROM base AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
 
-# Build the application
+COPY --from=deps /app/node_modules ./node_modules
+
+COPY packages/frontend ./packages/frontend
+
+WORKDIR /app/packages/frontend
+
 RUN npm run build
 
-# Production image, copy all the files and run the app
+# ---------- runner ----------
 FROM node:18-alpine AS runner
 WORKDIR /app
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
-RUN addgroup --system --group node && adduser --system --group node node
+RUN adduser -S -G node node || true
 
-# Copy built application
-COPY --from=builder --chown=node:node /app/.next/standalone ./
-COPY --from=builder --chown=node:node /app/.next/static ./.next/static
-COPY --from=builder --chown=node:node /app/public ./public
-COPY --from=builder --chown=node:node /app/package.json ./package.json
+COPY --from=builder --chown=node:node /app/packages/frontend/.next/standalone ./ 
+COPY --from=builder --chown=node:node /app/packages/frontend/.next/static ./.next/static
+COPY --from=builder --chown=node:node /app/packages/frontend/public ./public
 
 USER node
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start"]
+CMD ["node", "server.js"]

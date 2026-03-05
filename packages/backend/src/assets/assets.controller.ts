@@ -15,6 +15,7 @@ import { AssetsService } from './assets.service';
 import { CreateAssetDto } from './dto/create-asset.dto';
 import { UpdateAssetDto } from './dto/update-asset.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { AuthenticatedUser } from '../auth/auth.interface';
 
 @ApiTags('assets')
 @Controller('assets')
@@ -25,10 +26,12 @@ export class AssetsController {
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Create a new asset' })
   @ApiResponse({ status: 201, description: 'Asset created successfully' })
-  async create(@Body() createAssetDto: CreateAssetDto, @Request() req) {
+  async create(@Body() createAssetDto: CreateAssetDto, @Request() req: { user: AuthenticatedUser }) {
     return this.assetsService.create({
       ...createAssetDto,
-      sellerId: req.user.id,
+      seller: {
+        connect: { id: req.user.id }
+      },
     });
   }
 

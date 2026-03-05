@@ -30,20 +30,20 @@ services:
       PORT: 3001
       CORS_ORIGIN: http://localhost:3000
       # Add your environment variables here
-      # AUTH0_DOMAIN: ${AUTH0_DOMAIN}
-      # AUTH0_CLIENT_ID: ${AUTH0_CLIENT_ID}
-      # AUTH0_CLIENT_SECRET: ${AUTH0_CLIENT_SECRET}
-      # AUTH0_CALLBACK_URL: http://localhost:3001/api/auth/callback
-      # JWT_SECRET: ${JWT_SECRET}
-      # STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
-      # STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
-      # STRIPE_SUCCESS_URL: http://localhost:3000/success
-      # STRIPE_CANCEL_URL: http://localhost:3000/cancel
-      # AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      # AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      # AWS_REGION: ${AWS_REGION}
-      # AWS_S3_BUCKET: ${AWS_S3_BUCKET}
-      # AWS_S3_PUBLIC_BUCKET: ${AWS_S3_PUBLIC_BUCKET}
+      AUTH0_DOMAIN: ${AUTH0_DOMAIN}
+      AUTH0_CLIENT_ID: ${AUTH0_CLIENT_ID}
+      AUTH0_CLIENT_SECRET: ${AUTH0_CLIENT_SECRET}
+      AUTH0_CALLBACK_URL: ${AUTH0_CALLBACK_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      STRIPE_SUCCESS_URL: ${STRIPE_SUCCESS_URL}
+      STRIPE_CANCEL_URL: ${STRIPE_CANCEL_URL}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET}
+      AWS_S3_PUBLIC_BUCKET: ${AWS_S3_PUBLIC_BUCKET}
     ports:
       - "3001:3001"
     depends_on:
@@ -52,7 +52,7 @@ services:
       - ./packages/backend/prisma:/app/prisma
     networks:
       - prosets-network
-    command: ["./scripts/wait-for-db.sh", "./scripts/start-prod.sh"]
+    command: [ "./scripts/wait-for-db.sh", "./scripts/start-prod.sh" ]
 
   # Frontend
   frontend:
@@ -64,21 +64,22 @@ services:
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:3001
       # Add your environment variables here
-      # AUTH0_SECRET: ${AUTH0_SECRET}
-      # AUTH0_BASE_URL: http://localhost:3000
-      # AUTH0_ISSUER_BASE_URL: https://${AUTH0_DOMAIN}.auth0.com
-      # AUTH0_CLIENT_ID: ${AUTH0_CLIENT_ID}
-      # NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+      AUTH0_SECRET: ${AUTH0_SECRET}
+      AUTH0_BASE_URL: http://localhost:3000
+      AUTH0_ISSUER_BASE_URL: https://${AUTH0_DOMAIN}
+      AUTH0_CLIENT_ID: ${AUTH0_CLIENT_ID}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
     ports:
       - "3000:3000"
     depends_on:
       - backend
     networks:
       - prosets-network
-    command: ["./scripts/wait-for-api.sh", "./scripts/start-prod.sh"]
+    command: [ "./scripts/wait-for-api.sh", "./scripts/start-prod.sh" ]
 
 volumes:
   postgres_data:
+
 
 networks:
   prosets-network:

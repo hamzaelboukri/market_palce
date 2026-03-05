@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Fallback base styles if Tailwind vars not resolved */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

@@ -4,9 +4,22 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const session = require('express-session');
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
+
+  // Session required for Auth0 OAuth state (CSRF protection)
+  app.use(
+    session({
+      secret: configService.get('JWT_SECRET') || 'prosets-session-secret-change-in-prod',
+      resave: false,
+      saveUninitialized: false,
+      cookie: { secure: false, maxAge: 5 * 60 * 1000 }, // 5 min for auth flow
+    }),
+  );
 
   // Global validation pipe
   app.useGlobalPipes(

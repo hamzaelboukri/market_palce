@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Navigation from '@/components/Navigation'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -70,6 +71,7 @@ export default function AssetsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Navigation />
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-6">Browse Assets</h1>
@@ -87,7 +89,7 @@ export default function AssetsPage() {
                 <SelectValue placeholder="All Categories" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Categories</SelectItem>
+                <SelectItem value="ALL">All Categories</SelectItem>
                 <SelectItem value="MODEL_3D">3D Models</SelectItem>
                 <SelectItem value="CODE_SNIPPET">Code Snippets</SelectItem>
                 <SelectItem value="NOTION_TEMPLATE">Notion Templates</SelectItem>

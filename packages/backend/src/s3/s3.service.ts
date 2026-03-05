@@ -1,70 +1,36 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import AWS from 'aws-sdk';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class S3Service {
-  private s3: AWS.S3;
-  private publicS3: AWS.S3;
+  // S3 removed: no AWS fields
 
   constructor(
     private configService: ConfigService,
     private prisma: PrismaService,
   ) {
-    AWS.config.update({
-      accessKeyId: this.configService.get<string>('AWS_ACCESS_KEY_ID'),
-      secretAccessKey: this.configService.get<string>('AWS_SECRET_ACCESS_KEY'),
-      region: this.configService.get<string>('AWS_REGION'),
-    });
-
-    this.s3 = new AWS.S3();
-    this.publicS3 = new AWS.S3();
+    // S3 removed: no AWS initialization
   }
 
-  async uploadPrivateFile(file: Buffer, key: string, contentType: string) {
-    const bucket = this.configService.get<string>('AWS_S3_BUCKET');
-    
-    return this.s3.upload({
-      Bucket: bucket,
-      Key: key,
-      Body: file,
-      ContentType: contentType,
-      ACL: 'private',
-    }).promise();
+  async uploadPrivateFile(file: Buffer, key: string, contentType: string): Promise<void> {
+    // S3 removed: stub implementation
+    return;
   }
 
-  async uploadPublicFile(file: Buffer, key: string, contentType: string) {
-    const bucket = this.configService.get<string>('AWS_S3_PUBLIC_BUCKET');
-    
-    return this.publicS3.upload({
-      Bucket: bucket,
-      Key: key,
-      Body: file,
-      ContentType: contentType,
-      ACL: 'public-read',
-    }).promise();
+  async uploadPublicFile(file: Buffer, key: string, contentType: string): Promise<{ Location: string }> {
+    // S3 stub: return placeholder URL when AWS not configured
+    return { Location: `https://placeholder.s3.amazonaws.com/${key}` };
   }
 
   async generatePresignedUrl(key: string): Promise<string> {
-    const bucket = this.configService.get<string>('AWS_S3_BUCKET');
-    
-    return this.s3.getSignedUrlPromise('getObject', {
-      Bucket: bucket,
-      Key: key,
-      Expires: 300, // 5 minutes
-    });
+    // S3 removed: stub implementation
+    return '';
   }
 
-  async deleteFile(key: string, isPublic = false) {
-    const bucket = isPublic 
-      ? this.configService.get<string>('AWS_S3_PUBLIC_BUCKET')
-      : this.configService.get<string>('AWS_S3_BUCKET');
-
-    return (isPublic ? this.publicS3 : this.s3).deleteObject({
-      Bucket: bucket,
-      Key: key,
-    }).promise();
+  async deleteFile(key: string, isPublic = false): Promise<void> {
+    // S3 removed: stub implementation
+    return;
   }
 
   async getDownloadUrl(assetId: string, userId: string): Promise<string | null> {
@@ -90,29 +56,17 @@ export class S3Service {
       return null;
     }
 
-    // Generate presigned URL
-    const downloadUrl = await this.generatePresignedUrl(asset.sourceFileUrl);
-    
-    // Update purchase with download URL and expiry
-    const expiresAt = new Date();
-    expiresAt.setMinutes(expiresAt.getMinutes() + 5);
-
-    await this.prisma.purchase.update({
-      where: { id: purchase.id },
-      data: {
-        downloadUrl,
-        downloadExpires: expiresAt,
-      },
-    });
-
-    return downloadUrl;
+    // S3 removed: no download URL generation
+    return null;
   }
 
   generateFileKey(assetId: string, fileName: string): string {
-    return `assets/${assetId}/${fileName}`;
+    // S3 removed: stub implementation
+    return `${assetId}/${fileName}`;
   }
 
   generatePreviewKey(assetId: string, fileName: string): string {
-    return `previews/${assetId}/${fileName}`;
+    // S3 removed: stub implementation
+    return `${assetId}/preview/${fileName}`;
   }
 }

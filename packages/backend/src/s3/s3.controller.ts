@@ -7,11 +7,13 @@ import {
   UploadedFile,
   UseInterceptors,
   Body,
+  Request,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
 import { S3Service } from './s3.service';
 import { ApiTags, ApiOperation, ApiResponse, ApiConsumes } from '@nestjs/swagger';
+import { AuthenticatedUser } from '../auth/auth.interface';
 
 @ApiTags('s3')
 @Controller('s3')
@@ -62,7 +64,7 @@ export class S3Controller {
   @ApiResponse({ status: 200, description: 'Download URL generated' })
   async getDownloadUrl(
     @Param('assetId') assetId: string,
-    @Req() req: Request,
+    @Request() req: { user: AuthenticatedUser },
   ) {
     const userId = req.user.id;
     const downloadUrl = await this.s3Service.getDownloadUrl(assetId, userId);

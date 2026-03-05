@@ -1,0 +1,26 @@
+   ▲ Next.js 14.1.0
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+Compiler edge-server unexpectedly exited with code: null and signal: SIGTERM
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+
+./src/app/assets/page.tsx
+40:6  Warning: React Hook useEffect has a missing dependency: 'fetchAssets'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
+   Collecting page data ...
+   Generating static pages (0/13) ...
+   Generating static pages (3/13) 
+   Generating static pages (6/13) 
+   Generating static pages (9/13) 
+
+ ⨯ useSearchParams() should be wrapped in a suspense boundary at page "/auth/callback". Read more: https://nextjs.org/docs/messages/missing-suspense-with-csr-bailout
+
+Error occurred prerendering page "/auth/callback". Read more: https://nextjs.org/docs/messages/prerender-error
+
+ ✓ Generating static pages (13/13) 
+
+> Export encountered errors on following paths:
+	/auth/callback/page: /auth/callback

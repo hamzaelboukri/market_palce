@@ -1,10 +1,11 @@
 import { Card, CardContent } from '@/components/ui/card'
-import { Model3d, Code, FileText, Package } from 'lucide-react'
+import { Box, Code, FileText, Package } from 'lucide-react'
+import Link from 'next/link'
 
 const categories = [
   {
     name: '3D Models',
-    icon: Model3d,
+    icon: Box,
     description: 'High-quality 3D models for games and visualization',
     count: 150
   },
@@ -36,15 +37,20 @@ export function Categories() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {categories.map((category) => {
             const Icon = category.icon
+            const categoryValue = category.name.toUpperCase().replace(' ', '_').replace('S', '') // Simple mapping
+            const href = `/assets?category=${categoryValue === '3D_MODEL' ? 'MODEL_3D' : categoryValue}`
+
             return (
-              <Card key={category.name} className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardContent className="p-6 text-center">
-                  <Icon className="h-12 w-12 mx-auto mb-4 text-blue-600" />
-                  <h3 className="font-semibold mb-2">{category.name}</h3>
-                  <p className="text-sm text-gray-600 mb-2">{category.description}</p>
-                  <p className="text-xs text-gray-500">{category.count} items</p>
-                </CardContent>
-              </Card>
+              <Link href={href} key={category.name}>
+                <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+                  <CardContent className="p-6 text-center">
+                    <Icon className="h-12 w-12 mx-auto mb-4 text-blue-600" />
+                    <h3 className="font-semibold mb-2">{category.name}</h3>
+                    <p className="text-sm text-gray-600 mb-2">{category.description}</p>
+                    <p className="text-xs text-gray-500">{category.count} items</p>
+                  </CardContent>
+                </Card>
+              </Link>
             )
           })}
         </div>

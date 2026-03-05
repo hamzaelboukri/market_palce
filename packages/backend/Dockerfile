@@ -32,7 +32,7 @@ WORKDIR /app
 
 ENV NODE_ENV production
 
-RUN addgroup --system --group node && adduser --system --group node node
+RUN adduser -S -G node node || true
 
 # Copy built application
 COPY --from=builder --chown=node:node /app/dist ./dist

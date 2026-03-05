@@ -1,4 +1,4 @@
-# ProSets Marketplace
+# Market Palace
 
 Marketplace for digital assets (3D models, code snippets, Notion templates) with secure file delivery and payment processing.
 

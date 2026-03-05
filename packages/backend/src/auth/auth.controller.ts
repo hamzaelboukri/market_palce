@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Req, Res } from '@nestjs/common';
+import { Controller, Get, UseGuards, Req, Res, Post } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
@@ -13,11 +13,11 @@ export class AuthController {
     // Initiates Auth0 login flow
   }
 
-  @Get('auth0/callback')
+  @Get('callback')
   @UseGuards(AuthGuard('auth0'))
   async auth0Callback(@Req() req: Request, @Res() res: Response) {
     const token = await this.authService.login(req.user);
-    res.redirect(`${process.env.FRONTEND_URL}/auth/callback?token=${token}`);
+    res.redirect(`http://localhost:3000/auth/callback?token=${token.access_token}`);
   }
 
   @Get('profile')
@@ -26,11 +26,16 @@ export class AuthController {
     return req.user;
   }
 
-  @Get('logout')
+  @Get('validate-token')
   @UseGuards(AuthGuard('jwt'))
-  logout(@Req() req: Request, @Res() res: Response) {
-    req.logout(() => {
-      res.redirect('/');
-    });
+  validateToken(@Req() req: Request) {
+    return { valid: true, user: req.user };
+  }
+
+  @Get('logout')
+  async logout(@Req() req: Request, @Res() res: Response) {
+    // For Auth0 logout, redirect to Auth0 logout endpoint
+    const auth0LogoutUrl = `https://${process.env.AUTH0_DOMAIN}/v2/logout?client_id=${process.env.AUTH0_CLIENT_ID}&returnTo=http://localhost:3000`;
+    res.redirect(auth0LogoutUrl);
   }
 }

@@ -23,4 +23,4 @@ import { S3Module } from './s3/s3.module';
     S3Module,
   ],
 })
-export class AppModule {}
+export class AppModule { }

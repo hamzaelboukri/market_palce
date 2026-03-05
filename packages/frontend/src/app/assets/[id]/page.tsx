@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Star, Download, ShoppingCart, User, Calendar } from 'lucide-react'
 import Link from 'next/link'
+import { useAuthToken } from '@/lib/use-auth-token'
 
 interface Asset {
   id: string
@@ -41,6 +42,7 @@ interface Asset {
 export default function AssetDetailPage() {
   const params = useParams()
   const router = useRouter()
+  const { getAuthHeaders } = useAuthToken()
   const [asset, setAsset] = useState<Asset | null>(null)
   const [loading, setLoading] = useState(true)
   const [purchasing, setPurchasing] = useState(false)
@@ -69,11 +71,12 @@ export default function AssetDetailPage() {
     
     try {
       setPurchasing(true)
+      const authHeaders = await getAuthHeaders()
       const response = await fetch(`http://localhost:3001/stripe/create-checkout-session/${asset.id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          ...authHeaders
         }
       })
       const data = await response.json()
