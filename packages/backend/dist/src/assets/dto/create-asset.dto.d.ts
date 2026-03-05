@@ -1,5 +1,6 @@
 import { AssetCategory } from '@prisma/client';
 export declare class CreateAssetDto {
+    id?: string;
     title: string;
     description: string;
     price: number;

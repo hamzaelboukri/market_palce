@@ -3,6 +3,11 @@ import { IsString, IsNumber, IsArray, IsEnum, IsOptional } from 'class-validator
 import { AssetCategory } from '@prisma/client';
 
 export class CreateAssetDto {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  id?: string;
+
   @ApiProperty()
   @IsString()
   title: string;

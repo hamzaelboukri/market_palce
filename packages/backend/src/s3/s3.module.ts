@@ -6,7 +6,7 @@ import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
   imports: [ConfigModule, PrismaModule],
-  controllers: [/* S3Controller */],
+  controllers: [S3Controller],
   providers: [S3Service],
   exports: [S3Service],
 })

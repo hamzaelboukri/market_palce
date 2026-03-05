@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { API_URL } from '@/lib/api';
+import Navigation from '@/components/Navigation';
 import { useAuthToken } from '@/lib/use-auth-token';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -63,7 +65,7 @@ export default function NewAssetPage() {
             previewFormData.append('file', files.preview);
             previewFormData.append('assetId', tempId);
 
-            const previewRes = await fetch('http://localhost:3001/s3/upload-preview', {
+            const previewRes = await fetch(`${API_URL}/s3/upload-preview`, {
                 method: 'POST',
                 headers: authHeaders,
                 body: previewFormData,
@@ -77,7 +79,7 @@ export default function NewAssetPage() {
             sourceFormData.append('file', files.source);
             sourceFormData.append('assetId', tempId);
 
-            const sourceRes = await fetch('http://localhost:3001/s3/upload-source', {
+            const sourceRes = await fetch(`${API_URL}/s3/upload-source`, {
                 method: 'POST',
                 headers: authHeaders,
                 body: sourceFormData,
@@ -100,7 +102,7 @@ export default function NewAssetPage() {
                 sourceFileSize: sourceData.fileSize,
             };
 
-            const assetRes = await fetch('http://localhost:3001/assets', {
+            const assetRes = await fetch(`${API_URL}/assets`, {
                 method: 'POST',
                 headers: {
                     ...authHeaders,
@@ -124,8 +126,10 @@ export default function NewAssetPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-8">
-            <div className="max-w-3xl mx-auto">
+        <div className="min-h-screen bg-background">
+            <Navigation />
+            <div className="max-w-3xl mx-auto p-8">
+            <div>
                 <h1 className="text-3xl font-bold mb-8">Upload New Asset</h1>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -285,6 +289,7 @@ export default function NewAssetPage() {
                         </Button>
                     </div>
                 </form>
+            </div>
             </div>
         </div>
     );

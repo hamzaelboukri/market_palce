@@ -52,7 +52,7 @@ services:
       - ./packages/backend/prisma:/app/prisma
     networks:
       - prosets-network
-    command: [ "./scripts/wait-for-db.sh", "./scripts/start-prod.sh" ]
+    command: ["sh", "-c", "./scripts/wait-for-db.sh && ./scripts/start-prod.sh"]
 
   # Frontend
   frontend:
@@ -75,7 +75,7 @@ services:
       - backend
     networks:
       - prosets-network
-    command: [ "./scripts/wait-for-api.sh", "./scripts/start-prod.sh" ]
+    command: ["sh", "-c", "./scripts/wait-for-api.sh && ./scripts/start-prod.sh"]
 
 volumes:
   postgres_data:

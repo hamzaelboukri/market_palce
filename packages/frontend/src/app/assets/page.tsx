@@ -1,7 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Navigation from '@/components/Navigation'
+import { Footer } from '@/components/footer'
+import Image from 'next/image'
+import { API_URL } from '@/lib/api'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -35,11 +38,7 @@ export default function AssetsPage() {
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
 
-  useEffect(() => {
-    fetchAssets()
-  }, [filters, page])
-
-  const fetchAssets = async () => {
+  const fetchAssets = useCallback(async () => {
     try {
       setLoading(true)
       const params = new URLSearchParams({
@@ -60,7 +59,11 @@ export default function AssetsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [filters, page])
+
+  useEffect(() => {
+    fetchAssets()
+  }, [fetchAssets])
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }))
@@ -70,11 +73,12 @@ export default function AssetsPage() {
   const totalPages = Math.ceil(total / 12)
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-8 pb-16">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-6">Browse Assets</h1>
+          <h1 className="text-3xl font-bold mb-2">Browse Assets</h1>
+          <p className="text-muted-foreground">Discover premium 3D models, code snippets, and Notion templates</p>
           
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <Input
@@ -132,12 +136,14 @@ export default function AssetsPage() {
               {assets.map((asset) => (
                 <Card key={asset.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                   <CardHeader className="p-0">
-                    <div className="aspect-video bg-gray-200 relative">
+                    <div className="aspect-video bg-muted relative overflow-hidden">
                       {asset.previewImageUrl ? (
-                        <img 
+                        <Image 
                           src={asset.previewImageUrl} 
                           alt={asset.title}
-                          className="w-full h-full object-cover"
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -218,6 +224,7 @@ export default function AssetsPage() {
           </>
         )}
       </div>
+      <Footer />
     </div>
   )
 }

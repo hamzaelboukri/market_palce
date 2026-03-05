@@ -13,8 +13,10 @@ export function useAuthToken() {
     if (!isAuthenticated) return {};
     try {
       const token = await getAccessTokenSilently();
+      if (!token) return {};
       return { Authorization: `Bearer ${token}` };
-    } catch {
+    } catch (err) {
+      console.warn('Auth token unavailable:', err);
       return {};
     }
   };

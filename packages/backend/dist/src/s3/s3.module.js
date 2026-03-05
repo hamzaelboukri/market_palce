@@ -9,6 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.S3Module = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
+const s3_controller_1 = require("./s3.controller");
 const s3_service_1 = require("./s3.service");
 const prisma_module_1 = require("../prisma/prisma.module");
 let S3Module = class S3Module {
@@ -17,7 +18,7 @@ exports.S3Module = S3Module;
 exports.S3Module = S3Module = __decorate([
     (0, common_1.Module)({
         imports: [config_1.ConfigModule, prisma_module_1.PrismaModule],
-        controllers: [],
+        controllers: [s3_controller_1.S3Controller],
         providers: [s3_service_1.S3Service],
         exports: [s3_service_1.S3Service],
     })

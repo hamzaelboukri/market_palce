@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { API_URL } from '@/lib/api';
+import Navigation from '@/components/Navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -48,7 +50,7 @@ export default function AdminDashboard() {
         try {
             setLoading(true);
             const headers = await getAuthHeaders();
-            const response = await fetch('http://localhost:3001/assets?limit=100', {
+            const response = await fetch(`${API_URL}/assets?limit=100`, {
                 headers
             });
             const data = await response.json();
@@ -63,7 +65,7 @@ export default function AdminDashboard() {
     const handleUpdateStatus = async (assetId: string, status: string) => {
         try {
             const headers = await getAuthHeaders();
-            await fetch(`http://localhost:3001/assets/${assetId}`, {
+            await fetch(`${API_URL}/assets/${assetId}`, {
                 method: 'PATCH',
                 headers: {
                     ...headers,
@@ -85,22 +87,27 @@ export default function AdminDashboard() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="min-h-screen bg-background">
+                <Navigation />
+                <div className="flex items-center justify-center min-h-[60vh]">
+                    <div className="animate-spin rounded-full h-12 w-12 border-2 border-primary border-t-transparent" />
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 p-8">
-            <div className="max-w-7xl mx-auto">
+        <div className="min-h-screen bg-background">
+            <Navigation />
+            <div className="max-w-7xl mx-auto p-8">
+            <div>
                 <div className="flex justify-between items-center mb-8">
                     <div>
                         <h1 className="text-3xl font-bold flex items-center gap-2">
                             <Shield className="h-8 w-8 text-blue-600" />
                             Admin Moderation
                         </h1>
-                        <p className="text-gray-600">Review and moderate marketplace assets</p>
+                        <p className="text-muted-foreground">Review and moderate marketplace assets</p>
                     </div>
                 </div>
 
@@ -200,6 +207,7 @@ export default function AdminDashboard() {
                         </div>
                     </CardContent>
                 </Card>
+            </div>
             </div>
         </div>
     );

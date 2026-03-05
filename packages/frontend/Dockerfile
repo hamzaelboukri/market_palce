@@ -5,21 +5,16 @@ WORKDIR /app
 
 # ---------- deps ----------
 FROM base AS deps
+COPY package.json package-lock.json* ./
+RUN npm ci
 
-COPY package.json package-lock.json ./
-
-COPY packages/frontend ./packages/frontend
-
-RUN npm ci --workspace=packages/frontend
-
+# ---------- builder ----------
 FROM base AS builder
 WORKDIR /app
-
 COPY --from=deps /app/node_modules ./node_modules
+COPY . .
 
-COPY packages/frontend ./packages/frontend
-
-WORKDIR /app/packages/frontend
+ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN npm run build
 
@@ -28,15 +23,20 @@ FROM node:18-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN adduser -S -G node node || true
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
 
-COPY --from=builder --chown=node:node /app/packages/frontend/.next/standalone ./ 
-COPY --from=builder --chown=node:node /app/packages/frontend/.next/static ./.next/static
-COPY --from=builder --chown=node:node /app/packages/frontend/public ./public
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-USER node
+USER nextjs
 
 EXPOSE 3000
+
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
 CMD ["node", "server.js"]

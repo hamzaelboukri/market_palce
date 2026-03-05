@@ -1,6 +1,9 @@
 {
-  "/auth/callback/page": "app/auth/callback/page.js",
-  "/profile/page": "app/profile/page.js",
-  "/page": "app/page.js",
-  "/assets/page": "app/assets/page.js"
+  "/_not-found/page": "app/_not-found/page.js",
+  "/login/page": "app/login/page.js",
+  "/assets/page": "app/assets/page.js",
+  "/seller/dashboard/page": "app/seller/dashboard/page.js",
+  "/seller/assets/new/page": "app/seller/assets/new/page.js",
+  "/assets/[id]/purchase/page": "app/assets/[id]/purchase/page.js",
+  "/assets/[id]/page": "app/assets/[id]/page.js"
 }

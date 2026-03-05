@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import { API_URL } from '@/lib/api'
+import Navigation from '@/components/Navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { CheckCircle, AlertCircle, Download } from 'lucide-react'
@@ -36,7 +38,7 @@ export default function PurchasePage() {
   const handleDownload = async () => {
     try {
       const authHeaders = await getAuthHeaders()
-      const response = await fetch(`http://localhost:3001/s3/download/${params.id}`, {
+      const response = await fetch(`${API_URL}/s3/download/${params.id}`, {
         headers: authHeaders
       })
       const data = await response.json()
@@ -53,7 +55,8 @@ export default function PurchasePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Navigation />
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-lg">Processing your purchase...</p>
@@ -64,7 +67,9 @@ export default function PurchasePage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 py-8">
         <Card className="w-full max-w-md">
           <CardContent className="p-6 text-center">
             <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
@@ -80,12 +85,15 @@ export default function PurchasePage() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 py-8">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
@@ -112,7 +120,7 @@ export default function PurchasePage() {
           </div>
 
           <div className="space-y-2">
-            <Button variant="outline" className="w-full" onClick={() => router.push('/purchases')}>
+            <Button variant="outline" className="w-full" onClick={() => router.push('/dashboard/purchases')}>
               View My Purchases
             </Button>
             <Button variant="outline" className="w-full" onClick={() => router.push('/assets')}>
@@ -121,6 +129,7 @@ export default function PurchasePage() {
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   )
 }

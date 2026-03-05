@@ -1,7 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
+import Image from 'next/image'
+import { API_URL } from '@/lib/api'
+import Navigation from '@/components/Navigation'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -41,7 +44,6 @@ interface Asset {
 
 export default function AssetDetailPage() {
   const params = useParams()
-  const router = useRouter()
   const { getAuthHeaders } = useAuthToken()
   const [asset, setAsset] = useState<Asset | null>(null)
   const [loading, setLoading] = useState(true)
@@ -56,7 +58,7 @@ export default function AssetDetailPage() {
   const fetchAsset = async (id: string) => {
     try {
       setLoading(true)
-      const response = await fetch(`http://localhost:3001/assets/${id}`)
+      const response = await fetch(`${API_URL}/assets/${id}`)
       const data = await response.json()
       setAsset(data)
     } catch (error) {
@@ -72,7 +74,7 @@ export default function AssetDetailPage() {
     try {
       setPurchasing(true)
       const authHeaders = await getAuthHeaders()
-      const response = await fetch(`http://localhost:3001/stripe/create-checkout-session/${asset.id}`, {
+      const response = await fetch(`${API_URL}/stripe/create-checkout-session/${asset.id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -93,17 +95,21 @@ export default function AssetDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-primary border-t-transparent" />
+        </div>
       </div>
     )
   }
 
   if (!asset) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Asset Not Found</h1>
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+          <h1 className="text-2xl font-bold">Asset Not Found</h1>
           <Button asChild>
             <Link href="/assets">Back to Assets</Link>
           </Button>
@@ -113,7 +119,8 @@ export default function AssetDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
+      <Navigation />
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
@@ -129,10 +136,12 @@ export default function AssetDetailPage() {
                       className="w-full h-full object-cover rounded-lg"
                     />
                   ) : asset.previewImageUrl ? (
-                    <img 
+                    <Image 
                       src={asset.previewImageUrl} 
                       alt={asset.title}
-                      className="w-full h-full object-cover rounded-lg"
+                      fill
+                      className="object-cover rounded-lg"
+                      sizes="(max-width: 1024px) 100vw, 66vw"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400">

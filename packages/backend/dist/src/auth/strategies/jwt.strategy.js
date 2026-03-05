@@ -14,25 +14,49 @@ const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const passport_jwt_1 = require("passport-jwt");
 const config_1 = require("@nestjs/config");
+const jwks_rsa_1 = require("jwks-rsa");
+const users_service_1 = require("../../users/users.service");
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
-    constructor(configService) {
+    constructor(configService, usersService) {
+        const auth0Domain = configService.get('AUTH0_DOMAIN', '');
+        const audience = configService.get('AUTH0_AUDIENCE', '');
         super({
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
-            secretOrKey: configService.get('JWT_SECRET'),
+            secretOrKeyProvider: (0, jwks_rsa_1.passportJwtSecret)({
+                cache: true,
+                rateLimit: true,
+                jwksRequestsPerMinute: 5,
+                jwksUri: `https://${auth0Domain}/.well-known/jwks.json`,
+            }),
+            audience: audience || undefined,
+            issuer: auth0Domain ? `https://${auth0Domain}/` : undefined,
+            algorithms: ['RS256'],
         });
+        this.usersService = usersService;
     }
     async validate(payload) {
+        const auth0Id = payload.sub;
+        let user = await this.usersService.findByAuth0Id(auth0Id);
+        if (!user) {
+            user = await this.usersService.create({
+                email: payload.email ?? `${auth0Id.replace('|', '-')}@auth0.user`,
+                name: payload.name ?? payload.nickname ?? null,
+                avatar: payload.picture ?? null,
+                auth0Id,
+            });
+        }
         return {
-            id: payload.sub,
-            email: payload.email,
-            role: payload.role,
+            id: user.id,
+            email: user.email,
+            role: user.role,
         };
     }
 };
 exports.JwtStrategy = JwtStrategy;
 exports.JwtStrategy = JwtStrategy = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [config_1.ConfigService])
+    __metadata("design:paramtypes", [config_1.ConfigService,
+        users_service_1.UsersService])
 ], JwtStrategy);
 //# sourceMappingURL=jwt.strategy.js.map
