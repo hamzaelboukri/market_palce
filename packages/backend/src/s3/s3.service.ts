@@ -18,9 +18,9 @@ export class S3Service {
     return;
   }
 
-  async uploadPublicFile(file: Buffer, key: string, contentType: string): Promise<{ Location: string }> {
-    // S3 stub: return placeholder URL when AWS not configured
-    return { Location: `https://placeholder.s3.amazonaws.com/${key}` };
+  async uploadPublicFile(file: Buffer, key: string, contentType: string): Promise<void> {
+    // S3 removed: stub implementation
+    return;
   }
 
   async generatePresignedUrl(key: string): Promise<string> {
